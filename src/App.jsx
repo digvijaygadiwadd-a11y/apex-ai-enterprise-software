@@ -1,154 +1,30 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend } from "chart.js";
-import { Bar, Doughnut } from "react-chartjs-2";
-import { marked } from "marked";
-
-ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Title, Tooltip, Legend);
-
-const API_BASE = import.meta.env.VITE_API_BASE || "http://127.0.0.1:8001";
+import React, { useState } from "react";
+import Sidebar from "./components/Sidebar";
+import ExecutiveCommand from "./components/ExecutiveCommand";
+import DeepTelemetry from "./components/DeepTelemetry";
+import InventoryMatrix from "./components/InventoryMatrix";
+import ThreatAlerts from "./components/ThreatAlerts";
+import AiAssistant from "./components/AiAssistant";
+import DataImportHub from "./components/DataImportHub";
 
 export default function App() {
-  const [kpis, setKpis] = useState({ total_revenue: "₹0", total_orders: "0", customers: "0", products: "0", inventory_units: "0", low_stock: "0" });
-  const [categoryData, setCategoryData] = useState({ labels: [], datasets: [] });
-  const [warehouseData, setWarehouseData] = useState({ labels: [], datasets: [] });
-  const [aiReport, setAiReport] = useState("Generating live insights from database...");
-  const [status, setStatus] = useState("Connecting...");
-
-  const fetchData = () => {
-    setStatus("Syncing...");
-    axios.get(`${API_BASE}/api/kpis`)
-      .then(res => {
-        setKpis(res.data?.kpis || {});
-        setStatus("Connected");
-      })
-      .catch(err => {
-        console.error("KPI Error:", err);
-        setStatus("Backend Offline");
-      });
-
-    axios.get(`${API_BASE}/api/bi/analytics`)
-      .then(res => {
-        const catLabels = res.data?.category_revenue?.map(item => item.category) || [];
-        const catValues = res.data?.category_revenue?.map(item => item.gross_revenue) || [];
-        setCategoryData({
-          labels: catLabels,
-          datasets: [{ label: "Gross Revenue (₹)", data: catValues, backgroundColor: "#3b82f6", borderRadius: 6 }]
-        });
-
-        const whLabels = res.data?.warehouse_stock?.map(item => item.warehouse_location) || [];
-        const whValues = res.data?.warehouse_stock?.map(item => item.current_stock) || [];
-        setWarehouseData({
-          labels: whLabels,
-          datasets: [{ data: whValues, backgroundColor: ["#10b981", "#f59e0b", "#ef4444", "#8b5cf6", "#06b6d4"] }]
-        });
-      })
-      .catch(err => console.error("Analytics Error:", err));
-
-    axios.post(`${API_BASE}/api/ai/analyze`, {})
-      .then(res => {
-        const rawAnalysis = res.data?.ai_analysis?.analysis || "No analysis available.";
-        setAiReport(marked.parse(rawAnalysis));
-      })
-      .catch(() => setAiReport("Failed to load AI insights."));
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const [activeTab, setActiveTab] = useState("dashboard");
 
   return (
     <div style={{ display: "flex", width: "100vw", height: "100vh", backgroundColor: "#020617", color: "#f8fafc", fontFamily: "system-ui, sans-serif", overflow: "hidden", margin: 0, padding: 0, boxSizing: "border-box" }}>
       {/* Sidebar */}
-      <aside style={{ width: "260px", height: "100vh", backgroundColor: "#0f172a", borderRight: "1px solid #1e293b", padding: "24px", display: "flex", flexDirection: "column", justifyContent: "space-between", flexShrink: 0, boxSizing: "border-box" }}>
-        <div>
-          <div style={{ marginBottom: "32px" }}>
-            <h1 style={{ fontSize: "24px", fontWeight: "900", letterSpacing: "1px", color: "#3b82f6", margin: 0 }}>BusinessIQ</h1>
-            <p style={{ fontSize: "12px", color: "#94a3b8", margin: "4px 0 0 0" }}>Decision Intelligence</p>
-          </div>
-          <nav style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-            <a href="#" style={{ display: "block", padding: "10px 16px", borderRadius: "8px", background: "#2563eb", color: "#fff", textDecoration: "none", fontWeight: "500" }}>Dashboard</a>
-            <a href="#" style={{ display: "block", padding: "10px 16px", borderRadius: "8px", color: "#94a3b8", textDecoration: "none" }}>Analytics</a>
-            <a href="#" style={{ display: "block", padding: "10px 16px", borderRadius: "8px", color: "#94a3b8", textDecoration: "none" }}>Inventory</a>
-            <a href="#" style={{ display: "block", padding: "10px 16px", borderRadius: "8px", color: "#94a3b8", textDecoration: "none" }}>Alerts</a>
-            <a href="#" style={{ display: "block", padding: "10px 16px", borderRadius: "8px", color: "#94a3b8", textDecoration: "none" }}>AI Recommendations</a>
-          </nav>
-        </div>
-        <div style={{ fontSize: "12px", color: "#64748b" }}>Status: <span style={{ color: status === "Connected" ? "#34d399" : "#fb7185", fontWeight: "600" }}>{status}</span></div>
-      </aside>
+      <div style={{ width: "260px", height: "100vh", flexShrink: 0 }}>
+        <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
+      </div>
 
-      {/* Main Content Area */}
+      {/* Main Dynamic Content Area */}
       <main style={{ flex: 1, height: "100vh", padding: "24px 32px", overflowY: "auto", boxSizing: "border-box" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
-          <h2 style={{ fontSize: "24px", fontWeight: "bold", margin: 0 }}>Executive Dashboard</h2>
-          <button onClick={fetchData} style={{ padding: "10px 20px", backgroundColor: "#2563eb", color: "#fff", fontWeight: "600", borderRadius: "10px", border: "none", cursor: "pointer", boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)" }}>
-            Refresh Data
-          </button>
-        </div>
-
-        {/* KPI Grid */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "20px", marginBottom: "24px" }}>
-          <div style={{ backgroundColor: "#0f172a", padding: "20px", borderRadius: "16px", border: "1px solid #1e293b" }}>
-            <p style={{ fontSize: "13px", color: "#94a3b8", margin: 0 }}>Total Revenue</p>
-            <p style={{ fontSize: "24px", fontWeight: "800", color: "#34d399", margin: "6px 0 2px 0" }}>{kpis.total_revenue}</p>
-            <p style={{ fontSize: "11px", color: "#64748b", margin: 0 }}>Business revenue collected</p>
-          </div>
-          <div style={{ backgroundColor: "#0f172a", padding: "20px", borderRadius: "16px", border: "1px solid #1e293b" }}>
-            <p style={{ fontSize: "13px", color: "#94a3b8", margin: 0 }}>Total Orders</p>
-            <p style={{ fontSize: "24px", fontWeight: "800", color: "#60a5fa", margin: "6px 0 2px 0" }}>{kpis.total_orders}</p>
-            <p style={{ fontSize: "11px", color: "#64748b", margin: 0 }}>Processed transactions</p>
-          </div>
-          <div style={{ backgroundColor: "#0f172a", padding: "20px", borderRadius: "16px", border: "1px solid #1e293b" }}>
-            <p style={{ fontSize: "13px", color: "#94a3b8", margin: 0 }}>Customers</p>
-            <p style={{ fontSize: "24px", fontWeight: "800", color: "#818cf8", margin: "6px 0 2px 0" }}>{kpis.customers}</p>
-            <p style={{ fontSize: "11px", color: "#64748b", margin: 0 }}>Active business customers</p>
-          </div>
-          <div style={{ backgroundColor: "#0f172a", padding: "20px", borderRadius: "16px", border: "1px solid #1e293b" }}>
-            <p style={{ fontSize: "13px", color: "#94a3b8", margin: 0 }}>Products</p>
-            <p style={{ fontSize: "24px", fontWeight: "800", color: "#fbbf24", margin: "6px 0 2px 0" }}>{kpis.products}</p>
-            <p style={{ fontSize: "11px", color: "#64748b", margin: 0 }}>Total available products</p>
-          </div>
-          <div style={{ backgroundColor: "#0f172a", padding: "20px", borderRadius: "16px", border: "1px solid #1e293b" }}>
-            <p style={{ fontSize: "13px", color: "#94a3b8", margin: 0 }}>Inventory Units</p>
-            <p style={{ fontSize: "24px", fontWeight: "800", color: "#c084fc", margin: "6px 0 2px 0" }}>{kpis.inventory_units}</p>
-            <p style={{ fontSize: "11px", color: "#64748b", margin: 0 }}>Low stock alerts: {kpis.low_stock}</p>
-          </div>
-          <div style={{ backgroundColor: "#0f172a", padding: "20px", borderRadius: "16px", border: "1px solid #1e293b" }}>
-            <p style={{ fontSize: "13px", color: "#94a3b8", margin: 0 }}>System Alerts</p>
-            <p style={{ fontSize: "24px", fontWeight: "800", color: "#fb7185", margin: "6px 0 2px 0" }}>{kpis.low_stock}</p>
-            <p style={{ fontSize: "11px", color: "#64748b", margin: 0 }}>Requires attention</p>
-          </div>
-        </div>
-
-        {/* Charts Section */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginBottom: "24px" }}>
-          <div style={{ backgroundColor: "#0f172a", padding: "20px", borderRadius: "16px", border: "1px solid #1e293b" }}>
-            <h3 style={{ fontSize: "15px", fontWeight: "600", marginBottom: "12px", color: "#e2e8f0" }}>Gross Revenue by Product Category</h3>
-            <div style={{ position: "relative", height: "220px", display: "flex", justifyContent: "center", alignItems: "center" }}>
-              {categoryData.labels?.length > 0 ? (
-                <Bar data={categoryData} options={{ responsive: true, maintainAspectRatio: false }} />
-              ) : (
-                <p style={{ fontSize: "13px", color: "#64748b" }}>Loading chart data...</p>
-              )}
-            </div>
-          </div>
-          <div style={{ backgroundColor: "#0f172a", padding: "20px", borderRadius: "16px", border: "1px solid #1e293b" }}>
-            <h3 style={{ fontSize: "15px", fontWeight: "600", marginBottom: "12px", color: "#e2e8f0" }}>Current Stock by Warehouse</h3>
-            <div style={{ position: "relative", height: "220px", display: "flex", justifyContent: "center", alignItems: "center" }}>
-              {warehouseData.labels?.length > 0 ? (
-                <Doughnut data={warehouseData} options={{ responsive: true, maintainAspectRatio: false }} />
-              ) : (
-                <p style={{ fontSize: "13px", color: "#64748b" }}>Loading chart data...</p>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* AI Report Section */}
-        <div style={{ backgroundColor: "#0f172a", padding: "20px", borderRadius: "16px", border: "1px solid #1e293b", marginBottom: "40px" }}>
-          <h3 style={{ fontSize: "15px", fontWeight: "600", marginBottom: "12px", color: "#e2e8f0" }}>🤖 Principal BA Live AI Diagnostic Report</h3>
-          <div dangerouslySetInnerHTML={{ __html: aiReport }} style={{ color: "#cbd5e1", fontSize: "13px", lineHeight: "1.5", backgroundColor: "#020617", padding: "16px", borderRadius: "10px", border: "1px solid #1e293b" }} />
-        </div>
+        {activeTab === "dashboard" && <ExecutiveCommand />}
+        {activeTab === "analytics" && <DeepTelemetry />}
+        {activeTab === "inventory" && <InventoryMatrix />}
+        {activeTab === "alerts" && <ThreatAlerts />}
+        {activeTab === "ai" && <AiAssistant />}
+        {activeTab === "import" && <DataImportHub />}
       </main>
     </div>
   );
