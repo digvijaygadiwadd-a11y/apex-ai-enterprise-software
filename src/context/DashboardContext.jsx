@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState } from "react";
 
-export const DashboardContext = createContext();
+const DashboardContext = createContext();
 
 export function DashboardProvider({ children }) {
   const [dashboardData, setDashboardData] = useState({
@@ -8,15 +8,7 @@ export function DashboardProvider({ children }) {
     activeNodes: "1,248",
     systemHealth: "99.8%",
     latency: "14ms",
-    totalUnits: "14,250",
-    openAlerts: "3",
-    supplyHealth: "94.2%",
-    lowStockSkus: "12",
-    categoryLabels: ["Electronics", "Apparel", "Logistics", "Raw Materials"],
-    categoryValues: [40, 25, 20, 15],
-    warehouseLabels: ["North Hub", "East Depots", "West Terminal", "South Gateway"],
-    warehouseValues: [35, 28, 22, 15],
-    aiReport: "Optimal throughput detected across primary distribution channels.",
+    aiReport: "Optimal telemetry detected across active ingestion nodes. System operating within nominal parameters.",
     customDataset: null
   });
 
@@ -25,7 +17,6 @@ export function DashboardProvider({ children }) {
       ...prev,
       totalRevenue: stats.primaryMetric || prev.totalRevenue,
       activeNodes: stats.rowCount ? stats.rowCount.toString() : prev.activeNodes,
-      totalUnits: stats.rowCount ? (stats.rowCount * 12).toString() : prev.totalUnits,
       customDataset: stats
     }));
   };
