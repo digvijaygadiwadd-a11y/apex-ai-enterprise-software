@@ -5,7 +5,6 @@ export default function ExecutiveCommand() {
   const [loading, setLoading] = useState(false);
   const [baData, setBaData] = useState(null);
   
-  // New FAANG State: Dynamic Chart Axis & SQL Fixer
   const [xAxisCol, setXAxisCol] = useState("");
   const [yAxisCol, setYAxisCol] = useState("");
   const [rawSqlInput, setRawSqlInput] = useState("DROP DATABASE IF EXISTS AI_Business_Platform;\nSELECT * FROM transactions WHERE amount > 10000;");
@@ -116,8 +115,7 @@ export default function ExecutiveCommand() {
           model: "openai/gpt-oss-20b",
           messages: [
             { role: "system", content: "You are an expert database administrator. Fix any dangerous queries, remove destructive drops if unsafe, add indexes recommendations, and optimize SQL performance." },
-            { role: "user", content: "Optimize and secure this SQL query:
-" + rawSqlInput }
+            { role: "user", content: "Optimize and secure this SQL query:\n" + rawSqlInput }
           ],
           temperature: 0.3
         })
@@ -149,7 +147,6 @@ export default function ExecutiveCommand() {
   return (
     <div style={{ padding: "16px", color: "#f8fafc", height: "calc(100vh - 100px)", overflowY: "auto", display: "flex", flexDirection: "column", gap: "20px", fontFamily: "Inter, system-ui, sans-serif" }}>
       
-      {/* Top Header & Upload Action */}
       <div style={{ backgroundColor: "#0f172a", padding: "20px 24px", borderRadius: "14px", border: "1px solid #1e293b", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "15px", boxShadow: "0 4px 20px rgba(0,0,0,0.3)" }}>
         <div>
           <span style={{ backgroundColor: "#38bdf8", color: "#0f172a", padding: "4px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.5px" }}>FAANG Enterprise Decision Engine</span>
@@ -173,7 +170,6 @@ export default function ExecutiveCommand() {
         </div>
       )}
 
-      {/* Telemetry KPI Cards */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "15px" }}>
         <div style={{ backgroundColor: "#0f172a", padding: "18px", borderRadius: "12px", border: "1px solid #1e293b" }}>
           <span style={{ fontSize: "12px", color: "#94a3b8", display: "block" }}>Telemetry Stream Status</span>
@@ -208,7 +204,6 @@ export default function ExecutiveCommand() {
         </div>
       </div>
 
-      {/* Dynamic Axis Selector & Power BI Visuals */}
       <div style={{ backgroundColor: "#0f172a", padding: "20px", borderRadius: "12px", border: "1px solid #1e293b", display: "flex", flexDirection: "column", gap: "15px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px" }}>
           <h3 style={{ margin: 0, fontSize: "15px", color: "#f8fafc" }}>📈 Dynamic Power BI Chart & Axis Selector</h3>
@@ -235,7 +230,6 @@ export default function ExecutiveCommand() {
         <p style={{ fontSize: "11px", color: "#94a3b8", margin: 0 }}>Plotting distribution based on schema attributes: <b>{xAxisCol} vs {yAxisCol}</b></p>
       </div>
 
-      {/* AI SQL Query Optimizer & Fixer Tool */}
       <div style={{ backgroundColor: "#0f172a", padding: "20px", borderRadius: "12px", border: "1px solid #1e293b", display: "flex", flexDirection: "column", gap: "12px" }}>
         <h3 style={{ margin: 0, fontSize: "16px", color: "#38bdf8" }}>⚡ AI SQL Query Optimizer & Security Guard</h3>
         <p style={{ color: "#94a3b8", fontSize: "12px", margin: 0 }}>Paste any raw or risky SQL query below to let the AI rewrite, secure, and optimize it instantly.</p>
@@ -255,7 +249,6 @@ export default function ExecutiveCommand() {
         </div>
       </div>
 
-      {/* Business Analyst Root-Cause & Action Matrix */}
       <div style={{ backgroundColor: "#0f172a", padding: "22px", borderRadius: "12px", border: "1px solid #1e293b" }}>
         <h3 style={{ margin: "0 0 14px 0", fontSize: "17px", color: "#38bdf8" }}>🛠️ Business Analyst Root-Cause & Action Matrix</h3>
         
