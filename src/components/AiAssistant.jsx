@@ -26,7 +26,7 @@ export default function AiAssistant() {
           "Authorization": `Bearer ${apiKey}`
         },
         body: JSON.stringify({
-          model: "llama-3.1-8b-instant",
+          model: "llama3-8b-8192",
           messages: [
             { role: "system", content: "You are Apex AI, an advanced enterprise assistant built for Digvijay." },
             { role: "user", content: userMessage }
