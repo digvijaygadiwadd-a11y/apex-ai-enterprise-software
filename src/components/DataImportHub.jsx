@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import Papa from "papaparse";
+import { useDashboard } from "../context/DashboardContext";
 
 export default function DataImportHub() {
+  const { updateWithParsedData } = useDashboard();
   const [fileName, setFileName] = useState("");
   const [stats, setStats] = useState(null);
   const [error, setError] = useState("");
@@ -34,12 +36,16 @@ export default function DataImportHub() {
           sum = data.reduce((acc, row) => acc + (parseFloat(row[numericKey]) || 0), 0);
         }
 
-        setStats({
+        const computedStats = {
           rowCount,
           columns: keys.length,
           primaryMetric: numericKey ? sum.toLocaleString(undefined, { maximumFractionDigits: 2 }) : "N/A",
           metricName: numericKey ? `Total ${numericKey}` : "Total Records"
-        });
+        };
+
+        setStats(computedStats);
+        // Feed real parsed data back into the global dashboard context!
+        updateWithParsedData(computedStats);
       },
       error: (err) => {
         setLoading(false);
@@ -51,19 +57,19 @@ export default function DataImportHub() {
   return (
     <div style={{ padding: "24px", color: "#fff", background: "#0f172a", minHeight: "100vh", borderRadius: "12px" }}>
       <h2 style={{ fontSize: "24px", fontWeight: "bold", marginBottom: "8px" }}>Data Ingestion & Parsing Hub</h2>
-      <p style={{ color: "#94a3b8", marginBottom: "24px" }}>Upload enterprise datasets (CSV) for real-time telemetry extraction and metric parsing.</p>
+      <p style={{ color: "#94a3b8", marginBottom: "24px" }}>Upload enterprise datasets (CSV) to propagate real-time metrics across the global dashboard ecosystem.</p>
       <div style={{ border: "2px dashed #334155", padding: "32px", textAlign: "center", borderRadius: "8px", background: "#1e293b" }}>
         <input type="file" accept=".csv, .txt" onChange={handleFileUpload} style={{ display: "none" }} id="csv-upload" />
         <label htmlFor="csv-upload" style={{ cursor: "pointer", background: "#3b82f6", color: "#fff", padding: "12px 24px", borderRadius: "6px", fontWeight: "500", display: "inline-block" }}>
           Select CSV Dataset
         </label>
-        {fileName && <p style={{ marginTop: "12px", color: "#38bdf8" }}>Loaded: {fileName}</p>}
+        {fileName && <p style={{ marginTop: "12px", color: "#38bdf8" }}>Loaded: {fileName} (Synced to Dashboard)</p>}
       </div>
       {loading && <p style={{ marginTop: "20px", color: "#facc15" }}>Parsing dataset streams...</p>}
       {error && <p style={{ marginTop: "20px", color: "#ef4444" }}>Error: {error}</p>}
       {stats && (
         <div style={{ marginTop: "32px", background: "#1e293b", padding: "20px", borderRadius: "8px", border: "1px solid #334155" }}>
-          <h3 style={{ fontSize: "18px", marginBottom: "16px", color: "#38bdf8" }}>Parsed Telemetry Summary</h3>
+          <h3 style={{ fontSize: "18px", marginBottom: "16px", color: "#38bdf8" }}>Parsed Telemetry Summary (Global State Synced)</h3>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px" }}>
             <div style={{ background: "#0f172a", padding: "16px", borderRadius: "6px" }}>
               <p style={{ color: "#94a3b8", fontSize: "14px" }}>Total Rows Processed</p>
