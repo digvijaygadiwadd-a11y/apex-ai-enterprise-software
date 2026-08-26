@@ -1,11 +1,15 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 export default function DataImportHub() {
   return (
     <div style={{ padding: "10px", color: "#f8fafc" }}>
-      <h2 style={{ fontSize: "24px", fontWeight: "bold", marginBottom: "8px" }}>Data Import & AI Hub</h2>
-      <p style={{ color: "#94a3b8", marginBottom: "20px" }}>Upload enterprise CSVs or connect live database feeds.</p>
-      <div style={{ backgroundColor: "#0f172a", padding: "24px", borderRadius: "12px", border: "1px solid #1e293b" }}>
-        <p style={{ color: "#fbbf24", margin: 0, fontWeight: "500" }}>Drop CSV files here or click to browse.</p>
+      <h2 style={{ fontSize: "26px", fontWeight: "bold", margin: "0 0 6px 0" }}>Data Import & AI Hub</h2>
+      <p style={{ color: "#94a3b8", marginBottom: "20px", fontSize: "14px" }}>Upload enterprise CSVs or connect live database feeds seamlessly.</p>
+      
+      <div style={{ backgroundColor: "#0f172a", padding: "40px", borderRadius: "12px", border: "2px dashed #334155", textAlign: "center", cursor: "pointer" }}>
+        <div style={{ fontSize: "40px", marginBottom: "10px" }}>📁</div>
+        <h3 style={{ fontSize: "18px", fontWeight: "600", margin: "0 0 6px 0" }}>Drop Enterprise Datasets Here</h3>
+        <p style={{ color: "#94a3b8", fontSize: "13px", margin: "0 0 20px 0" }}>Support for CSV, Excel, and Power BI telemetry exports</p>
+        <button style={{ backgroundColor: "#38bdf8", color: "#0f172a", border: "none", padding: "10px 20px", borderRadius: "8px", fontWeight: "bold", cursor: "pointer" }}>Browse Files</button>
       </div>
     </div>
   );
