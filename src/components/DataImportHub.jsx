@@ -1,98 +1,83 @@
-import React, { useState, useContext } from "react";
-import { DashboardContext } from "../context/DashboardContext";
+import React, { useState } from "react";
+import Papa from "papaparse";
 
 export default function DataImportHub() {
-  const { updateDashboard } = useContext(DashboardContext);
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [fileType, setFileType] = useState("csv");
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [successMsg, setSuccessMsg] = useState("");
+  const [fileName, setFileName] = useState("");
+  const [stats, setStats] = useState(null);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleFileChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      setSelectedFile(e.target.files[0]);
-    }
-  };
+  const handleFileUpload = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-  const handleUploadAndAnalyze = (e) => {
-    e.preventDefault();
-    if (!selectedFile) {
-      alert("Please select a file to import first.");
-      return;
-    }
+    setFileName(file.name);
+    setError("");
+    setLoading(true);
 
-    setIsAnalyzing(true);
-    setSuccessMsg("");
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: (results) => {
+        setLoading(false);
+        if (results.errors.length > 0 && results.data.length === 0) {
+          setError("Failed to parse CSV file. Please check format.");
+          return;
+        }
 
-    setTimeout(() => {
-      const randomRev = Math.floor(Math.random() * 5000000) + 3000000;
-      const randomUnits = Math.floor(Math.random() * 20000) + 5000;
-      
-      const newMetrics = {
-        totalRevenue: "$" + randomRev.toLocaleString(),
-        totalUnits: randomUnits.toLocaleString(),
-        openAlerts: String(Math.floor(Math.random() * 8) + 1),
-        supplyHealth: "Optimized",
-        lowStockSkus: String(Math.floor(Math.random() * 5)),
-        categoryLabels: ["Segment A", "Segment B", "Segment C", "Segment D", "Segment E"],
-        categoryValues: [randomRev * 0.25, randomRev * 0.2, randomRev * 0.3, randomRev * 0.15, randomRev * 0.1],
-        warehouseLabels: ["Hub-Alpha", "Hub-Beta", "Hub-Gamma", "Hub-Delta"],
-        warehouseValues: [40, 30, 20, 10],
-        aiReport: `[APEX AI ENTERPRISE ASSESSMENT]
-Source File Ingested: ${selectedFile.name} (${fileType.toUpperCase()})
-Status: Successfully parsed. Dashboard charts and KPI parameters updated in real-time.
+        const data = results.data;
+        const rowCount = data.length;
+        const keys = Object.keys(data[0] || {});
+        let numericKey = keys.find(k => !isNaN(parseFloat(data[0][k])));
+        let sum = 0;
+        if (numericKey) {
+          sum = data.reduce((acc, row) => acc + (parseFloat(row[numericKey]) || 0), 0);
+        }
 
-1. Executive Summary:
-   - Ingested dataset contains structured corporate transactions.
-   - Total calculated valuation scales dynamically at ${"$" + randomRev.toLocaleString()}.
-
-2. Risk & Variance Analysis:
-   - Resource allocation efficiency is running at 94.2%.
-   - No major critical blockers detected in current file partitions.
-
-3. Actionable Solutions:
-   - Scale operations across Hub-Alpha to handle high transaction influx.
-   - Maintain current capital distribution thresholds.`
-      };
-
-      updateDashboard(newMetrics);
-      setIsAnalyzing(false);
-      setSuccessMsg("🎉 File successfully processed! Apex AI has updated your dashboard charts and metrics.");
-    }, 1500);
+        setStats({
+          rowCount,
+          columns: keys.length,
+          primaryMetric: numericKey ? sum.toLocaleString(undefined, { maximumFractionDigits: 2 }) : "N/A",
+          metricName: numericKey ? `Total ${numericKey}` : "Total Records"
+        });
+      },
+      error: (err) => {
+        setLoading(false);
+        setError(err.message);
+      }
+    });
   };
 
   return (
-    <div style={{ backgroundColor: "#0b0f19", padding: "24px", borderRadius: "16px", border: "1px solid #1a2234", display: "flex", flexDirection: "column", gap: "20px" }}>
-      <div>
-        <h3 style={{ fontSize: "16px", fontWeight: "700", color: "#fff", margin: "0 0 6px 0" }}>Apex Automated Enterprise Ingestion Hub</h3>
-        <p style={{ fontSize: "13px", color: "#64748b", margin: 0 }}>Upload SQL dumps, Excel sheets, CSVs, or PDF reports. Apex AI instantly parses your company data and reconfigures the live dashboard.</p>
+    <div style={{ padding: "24px", color: "#fff", background: "#0f172a", minHeight: "100vh", borderRadius: "12px" }}>
+      <h2 style={{ fontSize: "24px", fontWeight: "bold", marginBottom: "8px" }}>Data Ingestion & Parsing Hub</h2>
+      <p style={{ color: "#94a3b8", marginBottom: "24px" }}>Upload enterprise datasets (CSV) for real-time telemetry extraction and metric parsing.</p>
+      <div style={{ border: "2px dashed #334155", padding: "32px", textAlign: "center", borderRadius: "8px", background: "#1e293b" }}>
+        <input type="file" accept=".csv, .txt" onChange={handleFileUpload} style={{ display: "none" }} id="csv-upload" />
+        <label htmlFor="csv-upload" style={{ cursor: "pointer", background: "#3b82f6", color: "#fff", padding: "12px 24px", borderRadius: "6px", fontWeight: "500", display: "inline-block" }}>
+          Select CSV Dataset
+        </label>
+        {fileName && <p style={{ marginTop: "12px", color: "#38bdf8" }}>Loaded: {fileName}</p>}
       </div>
-
-      <form onSubmit={handleUploadAndAnalyze} style={{ display: "flex", flexDirection: "column", gap: "16px", backgroundColor: "#0f172a", padding: "20px", borderRadius: "12px", border: "1px solid #1e293b" }}>
-        <div style={{ display: "flex", gap: "16px" }}>
-          <div style={{ flex: 1 }}>
-            <label style={{ display: "block", fontSize: "12px", fontWeight: "600", color: "#94a3b8", marginBottom: "8px" }}>Select Data Source Format</label>
-            <select value={fileType} onChange={e => setFileType(e.target.value)} style={{ width: "100%", padding: "12px", backgroundColor: "#07090e", border: "1px solid #334155", borderRadius: "8px", color: "#fff", fontSize: "13px" }}>
-              <option value="csv">CSV Spreadsheet (.csv)</option>
-              <option value="excel">Microsoft Excel (.xlsx)</option>
-              <option value="sql">SQL Database Dump (.sql)</option>
-              <option value="pdf">PDF Financial Report (.pdf)</option>
-            </select>
+      {loading && <p style={{ marginTop: "20px", color: "#facc15" }}>Parsing dataset streams...</p>}
+      {error && <p style={{ marginTop: "20px", color: "#ef4444" }}>Error: {error}</p>}
+      {stats && (
+        <div style={{ marginTop: "32px", background: "#1e293b", padding: "20px", borderRadius: "8px", border: "1px solid #334155" }}>
+          <h3 style={{ fontSize: "18px", marginBottom: "16px", color: "#38bdf8" }}>Parsed Telemetry Summary</h3>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "16px" }}>
+            <div style={{ background: "#0f172a", padding: "16px", borderRadius: "6px" }}>
+              <p style={{ color: "#94a3b8", fontSize: "14px" }}>Total Rows Processed</p>
+              <p style={{ fontSize: "22px", fontWeight: "bold", marginTop: "4px" }}>{stats.rowCount}</p>
+            </div>
+            <div style={{ background: "#0f172a", padding: "16px", borderRadius: "6px" }}>
+              <p style={{ color: "#94a3b8", fontSize: "14px" }}>Schema Columns</p>
+              <p style={{ fontSize: "22px", fontWeight: "bold", marginTop: "4px" }}>{stats.columns}</p>
+            </div>
+            <div style={{ background: "#0f172a", padding: "16px", borderRadius: "6px" }}>
+              <p style={{ color: "#94a3b8", fontSize: "14px" }}>{stats.metricName}</p>
+              <p style={{ fontSize: "22px", fontWeight: "bold", marginTop: "4px" }}>{stats.primaryMetric}</p>
+            </div>
           </div>
-          <div style={{ flex: 2 }}>
-            <label style={{ display: "block", fontSize: "12px", fontWeight: "600", color: "#94a3b8", marginBottom: "8px" }}>Upload Company Data File</label>
-            <input type="file" onChange={handleFileChange} style={{ width: "100%", padding: "9px", backgroundColor: "#07090e", border: "1px solid #334155", borderRadius: "8px", color: "#cbd5e1", fontSize: "13px" }} />
-          </div>
-        </div>
-
-        <button type="submit" disabled={isAnalyzing} style={{ padding: "12px 20px", backgroundColor: "#2563eb", color: "#fff", fontWeight: "700", borderRadius: "8px", border: "none", cursor: "pointer", fontSize: "13px", alignSelf: "flex-start" }}>
-          {isAnalyzing ? "Processing & Parsing Data..." : "Run Apex AI Intelligence & Update Dashboard 🚀"}
-        </button>
-      </form>
-
-      {successMsg && (
-        <div style={{ backgroundColor: "#065f46", color: "#34d399", padding: "14px 18px", borderRadius: "10px", fontSize: "13px", fontWeight: "600", border: "1px solid #059669" }}>
-          {successMsg}
         </div>
       )}
     </div>
