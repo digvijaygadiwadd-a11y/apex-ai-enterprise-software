@@ -1,64 +1,68 @@
+import React from "react";
 
 export default function Sidebar({ activeTab, setActiveTab }) {
   const menuItems = [
-    { id: "command", label: "Executive Command", icon: "⚡" },
-    { id: "import", label: "Data Import & AI Hub", icon: "📂" },
-    { id: "telemetry", label: "Deep Telemetry", icon: "📊" },
+    { id: "dashboard", label: "Executive Command", icon: "⚡" },
+    { id: "import", label: "Data Import & AI Hub", icon: "📁" },
+    { id: "analytics", label: "Deep Telemetry", icon: "📊" },
     { id: "inventory", label: "Inventory Matrix", icon: "📦" },
-    { id: "threats", label: "Threat Alerts", icon: "🚨" },
-    { id: "askai", label: "Ask AI Assistant", icon: "🤖" },
+    { id: "alerts", label: "Threat Alerts", icon: "🚨" },
+    { id: "ai", label: "Ask AI Assistant", icon: "🤖" },
   ];
 
   return (
-    <aside style={{ width: "280px", backgroundColor: "#0b0f19", borderRight: "1px solid #1a2234", display: "flex", flexDirection: "column", justifyContent: "space-between", padding: "28px 18px", boxSizing: "border-box" }}>
-      <div>
-        <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "36px", paddingLeft: "4px" }}>
-          <div style={{ width: "42px", height: "42px", backgroundColor: "#2563eb", borderRadius: "12px", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "900", color: "#fff", fontSize: "20px", boxShadow: "0 0 15px rgba(37, 99, 235, 0.4)" }}>A</div>
-          <div>
-            <h1 style={{ fontSize: "20px", fontWeight: "900", color: "#fff", margin: 0, letterSpacing: "1px" }}>Apex AI</h1>
-            <span style={{ fontSize: "11px", color: "#60a5fa", fontWeight: "800", textTransform: "uppercase", letterSpacing: "0.5px" }}>Decision Engine</span>
-          </div>
+    <div style={{ width: "260px", height: "100vh", backgroundColor: "#090d16", borderRight: "1px solid #1e293b", display: "flex", flexDirection: "column", padding: "20px 16px", boxSizing: "border-box" }}>
+      {/* Brand Header */}
+      <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "30px", paddingLeft: "8px" }}>
+        <div style={{ width: "36px", height: "36px", backgroundColor: "#6366f1", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: "bold", fontSize: "18px", color: "#fff" }}>
+          A
         </div>
-
-        <nav style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-          {menuItems.map(item => {
-            const isActive = activeTab === item.id;
-            return (
-              <button
-                key={item.id}
-                onClick={() => setActiveTab(item.id)}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "12px",
-                  width: "100%",
-                  padding: "12px 14px",
-                  backgroundColor: isActive ? "#1e293b" : "transparent",
-                  color: isActive ? "#fff" : "#94a3b8",
-                  border: isActive ? "1px solid #334155" : "1px solid transparent",
-                  borderRadius: "10px",
-                  fontWeight: isActive ? "700" : "500",
-                  fontSize: "13px",
-                  cursor: "pointer",
-                  textAlign: "left",
-                  transition: "all 0.2s"
-                }}
-              >
-                <span>{item.icon}</span>
-                {item.label}
-              </button>
-            );
-          })}
-        </nav>
+        <div>
+          <h1 style={{ fontSize: "16px", fontWeight: "bold", margin: 0, color: "#f8fafc" }}>Apex AI</h1>
+          <p style={{ fontSize: "11px", color: "#94a3b8", margin: 0 }}>DECISION ENGINE</p>
+        </div>
       </div>
 
-      <div style={{ backgroundColor: "#07090e", padding: "14px", borderRadius: "12px", border: "1px solid #1a2234" }}>
-        <p style={{ fontSize: "11px", fontWeight: "700", color: "#64748b", margin: "0 0 4px 0", textTransform: "uppercase" }}>System State</p>
+      {/* Navigation Menu */}
+      <div style={{ display: "flex", flexDirection: "column", gap: "6px", flex: 1 }}>
+        {menuItems.map((item) => {
+          const isActive = activeTab === item.id;
+          return (
+            <button
+              key={item.id}
+              onClick={() => setActiveTab(item.id)}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "12px",
+                width: "100%",
+                padding: "12px 14px",
+                backgroundColor: isActive ? "#1e293b" : "transparent",
+                color: isActive ? "#38bdf8" : "#94a3b8",
+                border: "none",
+                borderRadius: "8px",
+                cursor: "pointer",
+                fontSize: "14px",
+                fontWeight: isActive ? "600" : "400",
+                textAlign: "left",
+                transition: "all 0.2s ease"
+              }}
+            >
+              <span style={{ fontSize: "16px" }}>{item.icon}</span>
+              {item.label}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* System Status Footer */}
+      <div style={{ padding: "12px", backgroundColor: "#0f172a", borderRadius: "8px", border: "1px solid #1e293b" }}>
+        <p style={{ fontSize: "11px", color: "#64748b", margin: "0 0 6px 0", textTransform: "uppercase", letterSpacing: "0.5px" }}>System State</p>
         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-          <span style={{ width: "8px", height: "8px", backgroundColor: "#34d399", borderRadius: "50%", display: "inline-block" }}></span>
-          <span style={{ fontSize: "12px", color: "#cbd5e1", fontWeight: "600" }}>Live Operational</span>
+          <div style={{ width: "8px", height: "8px", backgroundColor: "#34d399", borderRadius: "50%" }}></div>
+          <span style={{ fontSize: "13px", color: "#e2e8f0", fontWeight: "500" }}>Live Operational</span>
         </div>
       </div>
-    </aside>
+    </div>
   );
 }
