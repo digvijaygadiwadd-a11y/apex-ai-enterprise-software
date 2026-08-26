@@ -1,44 +1,49 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 
 export default function DeepTelemetry() {
   const [telemetryLogs, setTelemetryLogs] = useState([
-    { id: 1, node: "US-East-Primary", latency: "14ms", status: "Optimal", load: "42%" },
-    { id: 2, node: "EU-Central-Worker", latency: "28ms", status: "Optimal", load: "68%" },
-    { id: 3, node: "AP-South-Cluster", latency: "64ms", status: "Warning", load: "89%" },
-    { id: 4, node: "SA-East-Node", latency: "112ms", status: "Critical", load: "95%" }
+    { id: 1, timestamp: "14:20:01", node: "Cluster-Alpha", status: "Nominal", latency: "12ms" },
+    { id: 2, timestamp: "14:20:04", node: "Cluster-Beta", status: "Nominal", latency: "14ms" },
+    { id: 3, timestamp: "14:20:08", node: "Edge-Gateway-01", status: "Warning", latency: "42ms" }
   ]);
 
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const now = new Date();
+      const timeStr = now.toTimeString().split(" ")[0];
+      const nodes = ["Cluster-Alpha", "Cluster-Beta", "Edge-Gateway-02", "Core-Router"];
+      const statuses = ["Nominal", "Nominal", "Nominal", "Optimized"];
+      const randomNode = nodes[Math.floor(Math.random() * nodes.length)];
+      const randomStatus = statuses[Math.floor(Math.random() * statuses.length)];
+      const randomLatency = `${Math.floor(Math.random() * 20) + 10}ms`;
+
+      setTelemetryLogs(prev => [
+        { id: Date.now(), timestamp: timeStr, node: randomNode, status: randomStatus, latency: randomLatency },
+        ...prev.slice(0, 5) // Keep last 6 logs
+      ]);
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <div style={{ backgroundColor: "#0b0f19", padding: "24px", borderRadius: "16px", border: "1px solid #1a2234" }}>
-      <h3 style={{ fontSize: "16px", fontWeight: "700", color: "#fff", marginBottom: "16px" }}>Live Global Node Telemetry</h3>
-      <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left", fontSize: "13px" }}>
-        <thead>
-          <tr style={{ borderBottom: "1px solid #1a2234", color: "#64748b" }}>
-            <th style={{ padding: "12px" }}>Node Identifier</th>
-            <th style={{ padding: "12px" }}>Latency</th>
-            <th style={{ padding: "12px" }}>Status</th>
-            <th style={{ padding: "12px" }}>CPU Load</th>
-          </tr>
-        </thead>
-        <tbody>
-          {telemetryLogs.map(log => (
-            <tr key={log.id} style={{ borderBottom: "1px solid #111827" }}>
-              <td style={{ padding: "12px", color: "#f8fafc", fontWeight: "600" }}>{log.node}</td>
-              <td style={{ padding: "12px", color: "#94a3b8" }}>{log.latency}</td>
-              <td style={{ padding: "12px" }}>
-                <span style={{ 
-                  padding: "4px 10px", borderRadius: "20px", fontSize: "11px", fontWeight: "700",
-                  backgroundColor: log.status === "Optimal" ? "#065f46" : log.status === "Warning" ? "#78350f" : "#7f1d1d",
-                  color: log.status === "Optimal" ? "#34d399" : log.status === "Warning" ? "#fbbf24" : "#f87171"
-                }}>
-                  {log.status}
-                </span>
-              </td>
-              <td style={{ padding: "12px", color: "#38bdf8" }}>{log.load}</td>
-            </tr>
+    <div style={{ padding: "24px", color: "#fff", background: "#0f172a", minHeight: "100vh", borderRadius: "12px" }}>
+      <h2 style={{ fontSize: "24px", fontWeight: "bold", marginBottom: "8px" }}>Deep System Telemetry</h2>
+      <p style={{ color: "#94a3b8", marginBottom: "24px" }}>Real-time event stream monitoring across enterprise infrastructure nodes.</p>
+
+      <div style={{ background: "#1e293b", padding: "20px", borderRadius: "8px", border: "1px solid #334155" }}>
+        <h3 style={{ fontSize: "18px", marginBottom: "16px", color: "#38bdf8" }}>Live Event Stream (Auto-Polling)</h3>
+        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+          {telemetryLogs.map((log) => (
+            <div key={log.id} style={{ display: "flex", justifyContent: "space-between", background: "#0f172a", padding: "12px 16px", borderRadius: "6px", border: "1px solid #334155", fontSize: "14px" }}>
+              <span style={{ color: "#94a3b8" }}>[{log.timestamp}]</span>
+              <span style={{ fontWeight: "600", color: "#fff" }}>{log.node}</span>
+              <span style={{ color: log.status === "Warning" ? "#facc15" : "#34d399" }}>{log.status}</span>
+              <span style={{ color: "#38bdf8" }}>{log.latency}</span>
+            </div>
           ))}
-        </tbody>
-      </table>
+        </div>
+      </div>
     </div>
   );
 }
