@@ -10,11 +10,46 @@ export default function ExecutiveCommand() {
   const [rawSqlInput, setRawSqlInput] = useState("DROP DATABASE IF EXISTS AI_Business_Platform;\nSELECT * FROM transactions WHERE amount > 10000;");
   const [optimizedSql, setOptimizedSql] = useState("");
   const [optimizing, setOptimizing] = useState(false);
+  const [latencyMs, setLatencyMs] = useState(142);
+
+  const loadSampleDataset = () => {
+    setLoading(true);
+    setTimeout(() => {
+      const sampleHeaders = ["TransactionID", "Region", "Volume", "ErrorRate", "RiskScore"];
+      const sampleRows = [
+        ["TXN_101", "North-America", "45000", "0.01", "12"],
+        ["TXN_102", "APAC-Region", "89000", "0.05", "45"],
+        ["TXN_103", "EMEA-Region", "34000", "0.02", "18"],
+        ["TXN_104", "LATAM-Region", "67000", "0.00", "5"]
+      ];
+      
+      setDataset({
+        name: "Enterprise_Telemetry_Q3.csv",
+        totalRows: 1420,
+        headers: sampleHeaders,
+        sampleRows: sampleRows
+      });
+
+      setXAxisCol("Region");
+      setYAxisCol("Volume");
+
+      setBaData({
+        healthScore: "94%",
+        riskLevel: "Optimized Stream",
+        sumValue: "235,000",
+        avgValue: "58,750",
+        analysisText: "1. Schema Validation Passed: 1,420 rows processed seamlessly.\n2. Anomaly Detected: Region APAC exhibits 5% error rate spike.\n3. Actionable Mitigation: Apply caching layer on regional endpoints to reduce latency."
+      });
+      setLoading(false);
+      setLatencyMs(98);
+    }, 600);
+  };
 
   const handleFileUpload = (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
+    const startTime = performance.now();
     const reader = new FileReader();
     reader.onload = async (event) => {
       const content = event.target.result;
@@ -76,9 +111,11 @@ export default function ExecutiveCommand() {
 
         const data = await res.json();
         const aiText = data.choices && data.choices[0] ? data.choices[0].message.content : "Analysis complete.";
+        const endTime = performance.now();
+        setLatencyMs(Math.round(endTime - startTime));
 
         setBaData({
-          healthScore: file.name.includes("sql") ? "62%" : "92%",
+          healthScore: file.name.includes("sql") ? "62%" : "95%",
           riskLevel: file.name.includes("sql") ? "High Vulnerability" : "Secure Stream",
           sumValue: computedSum ? computedSum.toLocaleString() : "0",
           avgValue: avgVal,
@@ -136,12 +173,12 @@ export default function ExecutiveCommand() {
   const handleExportReport = () => {
     const reportContent = "=== EXECUTIVE BA REPORT ===\n" +
       "Dataset: " + (dataset ? dataset.name : "Default Stream") + "\n" +
-      "Health Score: " + (baData ? baData.healthScore : "88%") + "\n" +
-      "Risk Level: " + (baData ? baData.riskLevel : "Nominal") + "\n\n" +
-      "AI Insights & Solutions:\n" + (baData ? baData.analysisText : "No analysis generated yet.");
+      "Health Score: " + (baData ? baData.healthScore : "95%") + "\n" +
+      "Risk Level: " + (baData ? baData.riskLevel : "Optimized Stream") + "\n\n" +
+      "AI Insights & Solutions:\n" + (baData ? baData.analysisText : "Click \x27Load Demo Data\x27 or upload file to view live telemetry insights.");
     
     navigator.clipboard.writeText(reportContent);
-    alert("Executive Report copied to clipboard successfully! Ready to share in meetings.");
+    alert("Executive Report copied to clipboard successfully!");
   };
 
   return (
@@ -149,13 +186,16 @@ export default function ExecutiveCommand() {
       
       <div style={{ backgroundColor: "#0f172a", padding: "20px 24px", borderRadius: "14px", border: "1px solid #1e293b", display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "15px", boxShadow: "0 4px 20px rgba(0,0,0,0.3)" }}>
         <div>
-          <span style={{ backgroundColor: "#38bdf8", color: "#0f172a", padding: "4px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.5px" }}>FAANG Enterprise Decision Engine</span>
+          <span style={{ backgroundColor: "#38bdf8", color: "#0f172a", padding: "4px 10px", borderRadius: "6px", fontSize: "11px", fontWeight: "bold", textTransform: "uppercase", letterSpacing: "0.5px" }}>FAANG Enterprise Decision Engine v3.2</span>
           <h2 style={{ fontSize: "22px", fontWeight: "bold", margin: "8px 0 2px 0" }}>Executive Command & Data Intelligence</h2>
-          <p style={{ color: "#94a3b8", margin: 0, fontSize: "13px" }}>Real-time automated root-cause analysis, dynamic axis charts, and SQL optimization.</p>
+          <p style={{ color: "#94a3b8", margin: 0, fontSize: "13px" }}>Real-time telemetry analytics, anomaly detection, and automated database optimization.</p>
         </div>
         <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+          <button onClick={loadSampleDataset} style={{ backgroundColor: "#065f46", color: "#34d399", padding: "10px 16px", borderRadius: "8px", fontWeight: "bold", cursor: "pointer", fontSize: "13px", border: "1px solid #059669" }}>
+            ⚡ Load Demo Telemetry
+          </button>
           <button onClick={handleExportReport} style={{ backgroundColor: "#334155", color: "#f8fafc", padding: "10px 16px", borderRadius: "8px", fontWeight: "bold", cursor: "pointer", fontSize: "13px", border: "1px solid #475569" }}>
-            📋 Export Executive Report
+            📋 Export Report
           </button>
           <label style={{ backgroundColor: "#38bdf8", color: "#0f172a", padding: "10px 18px", borderRadius: "8px", fontWeight: "bold", cursor: "pointer", fontSize: "13px", display: "inline-flex", alignItems: "center", gap: "8px", boxShadow: "0 2px 10px rgba(56,189,248,0.3)" }}>
             📂 Upload File (SQL/CSV)
@@ -166,47 +206,49 @@ export default function ExecutiveCommand() {
 
       {loading && (
         <div style={{ backgroundColor: "#1e293b", padding: "18px", borderRadius: "10px", color: "#38bdf8", textAlign: "center", border: "1px solid #334155", fontSize: "14px" }}>
-          <em>Analyzing data streams, structural risks, and executing BA root-cause matrix...</em>
+          <em>Parsing telemetry streams, running anomaly detection matrix...</em>
         </div>
       )}
 
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "15px" }}>
+        
         <div style={{ backgroundColor: "#0f172a", padding: "18px", borderRadius: "12px", border: "1px solid #1e293b" }}>
           <span style={{ fontSize: "12px", color: "#94a3b8", display: "block" }}>Telemetry Stream Status</span>
           <div style={{ display: "flex", alignItems: "center", gap: "8px", marginTop: "8px" }}>
             <span style={{ width: "10px", height: "10px", backgroundColor: dataset ? "#10b981" : "#f59e0b", borderRadius: "50%", display: "inline-block" }}></span>
             <h3 style={{ fontSize: "15px", margin: 0, color: dataset ? "#10b981" : "#f59e0b" }}>
-              {dataset ? "Connected (" + dataset.name + ")" : "Awaiting File Upload"}
+              {dataset ? dataset.name : "Awaiting File Stream"}
             </h3>
           </div>
         </div>
 
         <div style={{ backgroundColor: "#0f172a", padding: "18px", borderRadius: "12px", border: "1px solid #1e293b" }}>
-          <span style={{ fontSize: "12px", color: "#94a3b8", display: "block" }}>System Health Score</span>
+          <span style={{ fontSize: "12px", color: "#94a3b8", display: "block" }}>Pipeline Health Score</span>
           <div style={{ display: "flex", alignItems: "center", gap: "12px", marginTop: "6px" }}>
-            <h3 style={{ fontSize: "24px", margin: 0, color: "#f59e0b" }}>{baData ? baData.healthScore : "88%"}</h3>
+            <h3 style={{ fontSize: "24px", margin: 0, color: "#34d399" }}>{baData ? baData.healthScore : "95%"}</h3>
             <div style={{ flex: 1, backgroundColor: "#1e293b", height: "8px", borderRadius: "4px", overflow: "hidden" }}>
-              <div style={{ width: baData ? baData.healthScore : "88%", height: "100%", backgroundColor: "#f59e0b" }}></div>
+              <div style={{ width: baData ? baData.healthScore : "95%", height: "100%", backgroundColor: "#34d399" }}></div>
             </div>
           </div>
         </div>
 
         <div style={{ backgroundColor: "#0f172a", padding: "18px", borderRadius: "12px", border: "1px solid #1e293b" }}>
-          <span style={{ fontSize: "12px", color: "#94a3b8", display: "block" }}>Real-time Throughput / Rows</span>
-          <h3 style={{ fontSize: "24px", margin: "6px 0 0 0", color: "#6366f1" }}>{dataset ? dataset.totalRows : "Live Ready"}</h3>
+          <span style={{ fontSize: "12px", color: "#94a3b8", display: "block" }}>API & Ingestion Latency</span>
+          <h3 style={{ fontSize: "24px", margin: "6px 0 0 0", color: "#38bdf8" }}>{latencyMs} ms</h3>
         </div>
 
         <div style={{ backgroundColor: "#0f172a", padding: "18px", borderRadius: "12px", border: "1px solid #1e293b" }}>
-          <span style={{ fontSize: "12px", color: "#94a3b8", display: "block" }}>Security & Risk Level</span>
-          <h3 style={{ fontSize: "16px", margin: "8px 0 0 0", color: baData && baData.riskLevel.includes("Vulnerability") ? "#ef4444" : "#10b981" }}>
-            {baData ? baData.riskLevel : "Nominal (No Threats)"}
+          <span style={{ fontSize: "12px", color: "#94a3b8", display: "block" }}>Active Security Status</span>
+          <h3 style={{ fontSize: "15px", margin: "8px 0 0 0", color: baData && baData.riskLevel.includes("Vulnerability") ? "#ef4444" : "#34d399" }}>
+            {baData ? baData.riskLevel : "Zero-Threat Nominal"}
           </h3>
         </div>
+
       </div>
 
       <div style={{ backgroundColor: "#0f172a", padding: "20px", borderRadius: "12px", border: "1px solid #1e293b", display: "flex", flexDirection: "column", gap: "15px" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px" }}>
-          <h3 style={{ margin: 0, fontSize: "15px", color: "#f8fafc" }}>📈 Dynamic Power BI Chart & Axis Selector</h3>
+          <h3 style={{ margin: 0, fontSize: "15px", color: "#f8fafc" }}>📈 Dynamic Telemetry Distribution Matrix</h3>
           {dataset && dataset.headers && (
             <div style={{ display: "flex", gap: "10px", alignItems: "center", fontSize: "12px" }}>
               <span>X-Axis:</span>
@@ -222,17 +264,17 @@ export default function ExecutiveCommand() {
         </div>
 
         <div style={{ display: "flex", alignItems: "flex-end", height: "140px", gap: "14px", paddingBottom: "10px", borderBottom: "1px solid #334155" }}>
-          <div style={{ flex: 1, height: "55%", backgroundColor: "#38bdf8", borderRadius: "4px 4px 0 0", textAlign: "center", fontSize: "10px", color: "#0f172a", fontWeight: "bold", paddingTop: "4px" }}>{xAxisCol ? xAxisCol.substring(0, 8) : "Metric 1"}</div>
-          <div style={{ flex: 1, height: "85%", backgroundColor: "#6366f1", borderRadius: "4px 4px 0 0", textAlign: "center", fontSize: "10px", color: "#fff", fontWeight: "bold", paddingTop: "4px" }}>{yAxisCol ? yAxisCol.substring(0, 8) : "Metric 2"}</div>
-          <div style={{ flex: 1, height: "70%", backgroundColor: "#38bdf8", borderRadius: "4px 4px 0 0", textAlign: "center", fontSize: "10px", color: "#0f172a", fontWeight: "bold", paddingTop: "4px" }}>Variance</div>
-          <div style={{ flex: 1, height: "95%", backgroundColor: "#10b981", borderRadius: "4px 4px 0 0", textAlign: "center", fontSize: "10px", color: "#0f172a", fontWeight: "bold", paddingTop: "4px" }}>Peak Value</div>
+          <div style={{ flex: 1, height: "60%", backgroundColor: "#38bdf8", borderRadius: "4px 4px 0 0", textAlign: "center", fontSize: "10px", color: "#0f172a", fontWeight: "bold", paddingTop: "4px" }}>{xAxisCol ? xAxisCol.substring(0, 8) : "Node A"}</div>
+          <div style={{ flex: 1, height: "90%", backgroundColor: "#6366f1", borderRadius: "4px 4px 0 0", textAlign: "center", fontSize: "10px", color: "#fff", fontWeight: "bold", paddingTop: "4px" }}>{yAxisCol ? yAxisCol.substring(0, 8) : "Node B"}</div>
+          <div style={{ flex: 1, height: "75%", backgroundColor: "#38bdf8", borderRadius: "4px 4px 0 0", textAlign: "center", fontSize: "10px", color: "#0f172a", fontWeight: "bold", paddingTop: "4px" }}>Throughput</div>
+          <div style={{ flex: 1, height: "95%", backgroundColor: "#10b981", borderRadius: "4px 4px 0 0", textAlign: "center", fontSize: "10px", color: "#0f172a", fontWeight: "bold", paddingTop: "4px" }}>Peak Load</div>
         </div>
-        <p style={{ fontSize: "11px", color: "#94a3b8", margin: 0 }}>Plotting distribution based on schema attributes: <b>{xAxisCol} vs {yAxisCol}</b></p>
+        <p style={{ fontSize: "11px", color: "#94a3b8", margin: 0 }}>Active telemetry mapping: <b>{xAxisCol || "Dataset Header"}</b> vs <b>{yAxisCol || "Metric Value"}</b></p>
       </div>
 
       <div style={{ backgroundColor: "#0f172a", padding: "20px", borderRadius: "12px", border: "1px solid #1e293b", display: "flex", flexDirection: "column", gap: "12px" }}>
         <h3 style={{ margin: 0, fontSize: "16px", color: "#38bdf8" }}>⚡ AI SQL Query Optimizer & Security Guard</h3>
-        <p style={{ color: "#94a3b8", fontSize: "12px", margin: 0 }}>Paste any raw or risky SQL query below to let the AI rewrite, secure, and optimize it instantly.</p>
+        <p style={{ color: "#94a3b8", fontSize: "12px", margin: 0 }}>Paste any raw database script or query below to let the AI secure and optimize it instantly.</p>
         
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "15px" }}>
           <div>
