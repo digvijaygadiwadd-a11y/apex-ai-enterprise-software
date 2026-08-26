@@ -4,7 +4,6 @@ export default function InventoryMatrix() {
     { id: "INV-001", name: "AI Accelerator Unit H100", stock: 142, status: "Optimal", warehouse: "Zone A" },
     { id: "INV-002", name: "Enterprise Server Blade 3U", stock: 85, status: "Stable", warehouse: "Zone B" },
     { id: "INV-003", name: "Quantum Security Module", stock: 19, status: "Low Stock", warehouse: "Zone C" },
-    { id: "INV-004", name: "Fiber Optic Transceiver 10G", stock: 512, status: "Optimal", warehouse: "Zone A" },
   ];
 
   return (
