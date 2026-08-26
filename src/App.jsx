@@ -19,7 +19,7 @@ export default function App() {
           <Sidebar activeTab={activeTab} setActiveTab={setActiveTab} />
         </div>
 
-        {/* Main Dynamic Content Area */}
+        {/* Main Dynamic Content Area with Safe Tab Switching */}
         <main style={{ flex: 1, height: "100vh", padding: "24px 32px", overflowY: "auto", boxSizing: "border-box" }}>
           {activeTab === "dashboard" && <ExecutiveCommand />}
           {activeTab === "analytics" && <DeepTelemetry />}
