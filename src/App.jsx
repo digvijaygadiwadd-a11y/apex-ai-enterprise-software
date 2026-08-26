@@ -59,7 +59,8 @@ export default function App() {
 
   return (
     <div style={{ display: "flex", width: "100vw", height: "100vh", backgroundColor: "#020617", color: "#f8fafc", fontFamily: "system-ui, sans-serif", overflow: "hidden", margin: 0, padding: 0, boxSizing: "border-box" }}>
-      <aside style={{ width: "260px", backgroundColor: "#0f172a", borderRight: "1px solid #1e293b", padding: "24px", display: "flex", flexDirection: "column", justifyContent: "space-between", flexShrink: 0 }}>
+      {/* Sidebar */}
+      <aside style={{ width: "260px", height: "100vh", backgroundColor: "#0f172a", borderRight: "1px solid #1e293b", padding: "24px", display: "flex", flexDirection: "column", justifyContent: "space-between", flexShrink: 0, boxSizing: "border-box" }}>
         <div>
           <div style={{ marginBottom: "32px" }}>
             <h1 style={{ fontSize: "24px", fontWeight: "900", letterSpacing: "1px", color: "#3b82f6", margin: 0 }}>BusinessIQ</h1>
@@ -73,76 +74,80 @@ export default function App() {
             <a href="#" style={{ display: "block", padding: "10px 16px", borderRadius: "8px", color: "#94a3b8", textDecoration: "none" }}>AI Recommendations</a>
           </nav>
         </div>
-        <div style={{ fontSize: "12px", color: "#64748b" }}>Status: <span style={{ color: "#34d399", fontWeight: "600" }}>{status}</span></div>
+        <div style={{ fontSize: "12px", color: "#64748b" }}>Status: <span style={{ color: status === "Connected" ? "#34d399" : "#fb7185", fontWeight: "600" }}>{status}</span></div>
       </aside>
 
-      <main style={{ flex: 1, padding: "32px", overflowY: "auto", boxSizing: "border-box" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "32px" }}>
+      {/* Main Content Area */}
+      <main style={{ flex: 1, height: "100vh", padding: "24px 32px", overflowY: "auto", boxSizing: "border-box" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "24px" }}>
           <h2 style={{ fontSize: "24px", fontWeight: "bold", margin: 0 }}>Executive Dashboard</h2>
           <button onClick={fetchData} style={{ padding: "10px 20px", backgroundColor: "#2563eb", color: "#fff", fontWeight: "600", borderRadius: "10px", border: "none", cursor: "pointer", boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)" }}>
             Refresh Data
           </button>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "24px", marginBottom: "32px" }}>
-          <div style={{ backgroundColor: "#0f172a", padding: "24px", borderRadius: "16px", border: "1px solid #1e293b" }}>
-            <p style={{ fontSize: "14px", color: "#94a3b8", margin: 0 }}>Total Revenue</p>
-            <p style={{ fontSize: "28px", fontWeight: "800", color: "#34d399", margin: "8px 0 4px 0" }}>{kpis.total_revenue}</p>
-            <p style={{ fontSize: "12px", color: "#64748b", margin: 0 }}>Business revenue collected</p>
+        {/* KPI Grid */}
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "20px", marginBottom: "24px" }}>
+          <div style={{ backgroundColor: "#0f172a", padding: "20px", borderRadius: "16px", border: "1px solid #1e293b" }}>
+            <p style={{ fontSize: "13px", color: "#94a3b8", margin: 0 }}>Total Revenue</p>
+            <p style={{ fontSize: "24px", fontWeight: "800", color: "#34d399", margin: "6px 0 2px 0" }}>{kpis.total_revenue}</p>
+            <p style={{ fontSize: "11px", color: "#64748b", margin: 0 }}>Business revenue collected</p>
           </div>
-          <div style={{ backgroundColor: "#0f172a", padding: "24px", borderRadius: "16px", border: "1px solid #1e293b" }}>
-            <p style={{ fontSize: "14px", color: "#94a3b8", margin: 0 }}>Total Orders</p>
-            <p style={{ fontSize: "28px", fontWeight: "800", color: "#60a5fa", margin: "8px 0 4px 0" }}>{kpis.total_orders}</p>
-            <p style={{ fontSize: "12px", color: "#64748b", margin: 0 }}>Processed transactions</p>
+          <div style={{ backgroundColor: "#0f172a", padding: "20px", borderRadius: "16px", border: "1px solid #1e293b" }}>
+            <p style={{ fontSize: "13px", color: "#94a3b8", margin: 0 }}>Total Orders</p>
+            <p style={{ fontSize: "24px", fontWeight: "800", color: "#60a5fa", margin: "6px 0 2px 0" }}>{kpis.total_orders}</p>
+            <p style={{ fontSize: "11px", color: "#64748b", margin: 0 }}>Processed transactions</p>
           </div>
-          <div style={{ backgroundColor: "#0f172a", padding: "24px", borderRadius: "16px", border: "1px solid #1e293b" }}>
-            <p style={{ fontSize: "14px", color: "#94a3b8", margin: 0 }}>Customers</p>
-            <p style={{ fontSize: "28px", fontWeight: "800", color: "#818cf8", margin: "8px 0 4px 0" }}>{kpis.customers}</p>
-            <p style={{ fontSize: "12px", color: "#64748b", margin: 0 }}>Active business customers</p>
+          <div style={{ backgroundColor: "#0f172a", padding: "20px", borderRadius: "16px", border: "1px solid #1e293b" }}>
+            <p style={{ fontSize: "13px", color: "#94a3b8", margin: 0 }}>Customers</p>
+            <p style={{ fontSize: "24px", fontWeight: "800", color: "#818cf8", margin: "6px 0 2px 0" }}>{kpis.customers}</p>
+            <p style={{ fontSize: "11px", color: "#64748b", margin: 0 }}>Active business customers</p>
           </div>
-          <div style={{ backgroundColor: "#0f172a", padding: "24px", borderRadius: "16px", border: "1px solid #1e293b" }}>
-            <p style={{ fontSize: "14px", color: "#94a3b8", margin: 0 }}>Products</p>
-            <p style={{ fontSize: "28px", fontWeight: "800", color: "#fbbf24", margin: "8px 0 4px 0" }}>{kpis.products}</p>
-            <p style={{ fontSize: "12px", color: "#64748b", margin: 0 }}>Total available products</p>
+          <div style={{ backgroundColor: "#0f172a", padding: "20px", borderRadius: "16px", border: "1px solid #1e293b" }}>
+            <p style={{ fontSize: "13px", color: "#94a3b8", margin: 0 }}>Products</p>
+            <p style={{ fontSize: "24px", fontWeight: "800", color: "#fbbf24", margin: "6px 0 2px 0" }}>{kpis.products}</p>
+            <p style={{ fontSize: "11px", color: "#64748b", margin: 0 }}>Total available products</p>
           </div>
-          <div style={{ backgroundColor: "#0f172a", padding: "24px", borderRadius: "16px", border: "1px solid #1e293b" }}>
-            <p style={{ fontSize: "14px", color: "#94a3b8", margin: 0 }}>Inventory Units</p>
-            <p style={{ fontSize: "28px", fontWeight: "800", color: "#c084fc", margin: "8px 0 4px 0" }}>{kpis.inventory_units}</p>
-            <p style={{ fontSize: "12px", color: "#64748b", margin: 0 }}>Low stock alerts: {kpis.low_stock}</p>
+          <div style={{ backgroundColor: "#0f172a", padding: "20px", borderRadius: "16px", border: "1px solid #1e293b" }}>
+            <p style={{ fontSize: "13px", color: "#94a3b8", margin: 0 }}>Inventory Units</p>
+            <p style={{ fontSize: "24px", fontWeight: "800", color: "#c084fc", margin: "6px 0 2px 0" }}>{kpis.inventory_units}</p>
+            <p style={{ fontSize: "11px", color: "#64748b", margin: 0 }}>Low stock alerts: {kpis.low_stock}</p>
           </div>
-          <div style={{ backgroundColor: "#0f172a", padding: "24px", borderRadius: "16px", border: "1px solid #1e293b" }}>
-            <p style={{ fontSize: "14px", color: "#94a3b8", margin: 0 }}>System Alerts</p>
-            <p style={{ fontSize: "28px", fontWeight: "800", color: "#fb7185", margin: "8px 0 4px 0" }}>{kpis.low_stock}</p>
-            <p style={{ fontSize: "12px", color: "#64748b", margin: 0 }}>Requires attention</p>
+          <div style={{ backgroundColor: "#0f172a", padding: "20px", borderRadius: "16px", border: "1px solid #1e293b" }}>
+            <p style={{ fontSize: "13px", color: "#94a3b8", margin: 0 }}>System Alerts</p>
+            <p style={{ fontSize: "24px", fontWeight: "800", color: "#fb7185", margin: "6px 0 2px 0" }}>{kpis.low_stock}</p>
+            <p style={{ fontSize: "11px", color: "#64748b", margin: 0 }}>Requires attention</p>
           </div>
         </div>
 
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", marginBottom: "32px" }}>
-          <div style={{ backgroundColor: "#0f172a", padding: "24px", borderRadius: "16px", border: "1px solid #1e293b" }}>
-            <h3 style={{ fontSize: "16px", fontWeight: "600", marginBottom: "16px", color: "#e2e8f0" }}>Gross Revenue by Product Category</h3>
-            <div style={{ position: "relative", height: "260px", display: "flex", justifyContent: "center", alignItems: "center" }}>
+        {/* Charts Section */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px", marginBottom: "24px" }}>
+          <div style={{ backgroundColor: "#0f172a", padding: "20px", borderRadius: "16px", border: "1px solid #1e293b" }}>
+            <h3 style={{ fontSize: "15px", fontWeight: "600", marginBottom: "12px", color: "#e2e8f0" }}>Gross Revenue by Product Category</h3>
+            <div style={{ position: "relative", height: "220px", display: "flex", justifyContent: "center", alignItems: "center" }}>
               {categoryData.labels?.length > 0 ? (
                 <Bar data={categoryData} options={{ responsive: true, maintainAspectRatio: false }} />
               ) : (
-                <p style={{ fontSize: "14px", color: "#64748b" }}>Loading chart data...</p>
+                <p style={{ fontSize: "13px", color: "#64748b" }}>Loading chart data...</p>
               )}
             </div>
           </div>
-          <div style={{ backgroundColor: "#0f172a", padding: "24px", borderRadius: "16px", border: "1px solid #1e293b" }}>
-            <h3 style={{ fontSize: "16px", fontWeight: "600", marginBottom: "16px", color: "#e2e8f0" }}>Current Stock by Warehouse</h3>
-            <div style={{ position: "relative", height: "260px", display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <div style={{ backgroundColor: "#0f172a", padding: "20px", borderRadius: "16px", border: "1px solid #1e293b" }}>
+            <h3 style={{ fontSize: "15px", fontWeight: "600", marginBottom: "12px", color: "#e2e8f0" }}>Current Stock by Warehouse</h3>
+            <div style={{ position: "relative", height: "220px", display: "flex", justifyContent: "center", alignItems: "center" }}>
               {warehouseData.labels?.length > 0 ? (
                 <Doughnut data={warehouseData} options={{ responsive: true, maintainAspectRatio: false }} />
               ) : (
-                <p style={{ fontSize: "14px", color: "#64748b" }}>Loading chart data...</p>
+                <p style={{ fontSize: "13px", color: "#64748b" }}>Loading chart data...</p>
               )}
             </div>
           </div>
         </div>
 
-        <div style={{ backgroundColor: "#0f172a", padding: "24px", borderRadius: "16px", border: "1px solid #1e293b" }}>
-          <h3 style={{ fontSize: "16px", fontWeight: "600", marginBottom: "16px", color: "#e2e8f0" }}>🤖 Principal BA Live AI Diagnostic Report</h3>
-          <div dangerouslySetInnerHTML={{ __html: aiReport }} style={{ color: "#cbd5e1", fontSize: "14px", lineHeight: "1.6", backgroundColor: "#020617", padding: "20px", borderRadius: "12px", border: "1px solid #1e293b" }} />
+        {/* AI Report Section */}
+        <div style={{ backgroundColor: "#0f172a", padding: "20px", borderRadius: "16px", border: "1px solid #1e293b", marginBottom: "40px" }}>
+          <h3 style={{ fontSize: "15px", fontWeight: "600", marginBottom: "12px", color: "#e2e8f0" }}>🤖 Principal BA Live AI Diagnostic Report</h3>
+          <div dangerouslySetInnerHTML={{ __html: aiReport }} style={{ color: "#cbd5e1", fontSize: "13px", lineHeight: "1.5", backgroundColor: "#020617", padding: "16px", borderRadius: "10px", border: "1px solid #1e293b" }} />
         </div>
       </main>
     </div>
