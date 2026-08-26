@@ -1,41 +1,26 @@
-import { useDashboard } from "../context/DashboardContext";
-
+import React, { useState, useEffect } from "react";
 export default function ExecutiveCommand() {
-  const { dashboardData } = useDashboard();
-
   return (
-    <div style={{ padding: "24px", color: "#fff", background: "#0f172a", minHeight: "100vh", borderRadius: "12px" }}>
+    <div style={{ padding: "10px", color: "#f8fafc" }}>
       <h2 style={{ fontSize: "24px", fontWeight: "bold", marginBottom: "8px" }}>Executive Command Center</h2>
-      <p style={{ color: "#94a3b8", marginBottom: "24px" }}>Global enterprise telemetry and operational metrics overview.</p>
-
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px", marginBottom: "24px" }}>
-        <div style={{ background: "#1e293b", padding: "16px", borderRadius: "8px", border: "1px solid #334155" }}>
-          <p style={{ color: "#94a3b8", fontSize: "14px" }}>Total Revenue / Metric</p>
-          <p style={{ fontSize: "24px", fontWeight: "bold", marginTop: "4px" }}>{dashboardData.totalRevenue}</p>
+      <p style={{ color: "#94a3b8", marginBottom: "20px" }}>Global enterprise telemetry and operational metrics overview.</p>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "16px" }}>
+        <div style={{ backgroundColor: "#0f172a", padding: "20px", borderRadius: "12px", border: "1px solid #1e293b" }}>
+          <p style={{ color: "#94a3b8", fontSize: "13px", margin: 0 }}>Total Revenue</p>
+          <p style={{ fontSize: "22px", fontWeight: "bold", color: "#34d399", margin: "6px 0 0 0" }}>₹482,900</p>
         </div>
-        <div style={{ background: "#1e293b", padding: "16px", borderRadius: "8px", border: "1px solid #334155" }}>
-          <p style={{ color: "#94a3b8", fontSize: "14px" }}>Active Nodes / Units</p>
-          <p style={{ fontSize: "24px", fontWeight: "bold", marginTop: "4px" }}>{dashboardData.activeNodes}</p>
+        <div style={{ backgroundColor: "#0f172a", padding: "20px", borderRadius: "12px", border: "1px solid #1e293b" }}>
+          <p style={{ color: "#94a3b8", fontSize: "13px", margin: 0 }}>Active Nodes</p>
+          <p style={{ fontSize: "22px", fontWeight: "bold", color: "#60a5fa", margin: "6px 0 0 0" }}>1,248</p>
         </div>
-        <div style={{ background: "#1e293b", padding: "16px", borderRadius: "8px", border: "1px solid #334155" }}>
-          <p style={{ color: "#94a3b8", fontSize: "14px" }}>System Health</p>
-          <p style={{ fontSize: "24px", fontWeight: "bold", marginTop: "4px", color: "#34d399" }}>{dashboardData.systemHealth}</p>
+        <div style={{ backgroundColor: "#0f172a", padding: "20px", borderRadius: "12px", border: "1px solid #1e293b" }}>
+          <p style={{ color: "#94a3b8", fontSize: "13px", margin: 0 }}>System Health</p>
+          <p style={{ fontSize: "22px", fontWeight: "bold", color: "#34d399", margin: "6px 0 0 0" }}>99.8%</p>
         </div>
-        <div style={{ background: "#1e293b", padding: "16px", borderRadius: "8px", border: "1px solid #334155" }}>
-          <p style={{ color: "#94a3b8", fontSize: "14px" }}>Network Latency</p>
-          <p style={{ fontSize: "24px", fontWeight: "bold", marginTop: "4px" }}>{dashboardData.latency}</p>
+        <div style={{ backgroundColor: "#0f172a", padding: "20px", borderRadius: "12px", border: "1px solid #1e293b" }}>
+          <p style={{ color: "#94a3b8", fontSize: "13px", margin: 0 }}>Network Latency</p>
+          <p style={{ fontSize: "22px", fontWeight: "bold", color: "#facc15", margin: "6px 0 0 0" }}>14ms</p>
         </div>
-      </div>
-
-      <div style={{ background: "#1e293b", padding: "20px", borderRadius: "8px", border: "1px solid #334155" }}>
-        <h3 style={{ fontSize: "18px", marginBottom: "12px", color: "#38bdf8" }}>Operational Status Report</h3>
-        <p style={{ color: "#cbd5e1", fontSize: "15px" }}>{dashboardData.aiReport}</p>
-        {dashboardData.customDataset && (
-          <div style={{ marginTop: "16px", padding: "12px", background: "#0f172a", borderRadius: "6px", border: "1px solid #3b82f6" }}>
-            <p style={{ color: "#38bdf8", fontWeight: "600" }}>Active CSV Dataset Loaded:</p>
-            <p style={{ color: "#94a3b8", fontSize: "14px" }}>Rows Processed: {dashboardData.customDataset.rowCount} | Columns: {dashboardData.customDataset.columns}</p>
-          </div>
-        )}
       </div>
     </div>
   );
