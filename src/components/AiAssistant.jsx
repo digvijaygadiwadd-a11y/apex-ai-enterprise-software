@@ -3,7 +3,7 @@ import { useState } from "react";
 export default function AiAssistant() {
   const [query, setQuery] = useState("");
   const [messages, setMessages] = useState([
-    { sender: "ai", text: "Apex Neural Core online. Enter an enterprise query or request telemetry diagnostics." }
+    { sender: "ai", text: "Apex Neural Core online v2. Enter an enterprise query or request telemetry diagnostics." }
   ]);
   const [loading, setLoading] = useState(false);
 
