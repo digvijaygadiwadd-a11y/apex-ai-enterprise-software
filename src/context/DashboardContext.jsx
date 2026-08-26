@@ -1,6 +1,6 @@
 import { createContext, useContext, useState } from "react";
 
-export const DashboardContext = createContext();
+const DashboardContext = createContext();
 
 export function DashboardProvider({ children }) {
   const [dashboardData, setDashboardData] = useState({

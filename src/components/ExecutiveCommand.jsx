@@ -1,4 +1,3 @@
-import React from "react";
 import { useDashboard } from "../context/DashboardContext";
 
 export default function ExecutiveCommand() {
