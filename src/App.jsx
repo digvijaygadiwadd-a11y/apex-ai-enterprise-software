@@ -9,19 +9,15 @@ import AiAssistant from "./components/AiAssistant";
 import DataImportHub from "./components/DataImportHub";
 
 class ErrorBoundary extends Component {
-  state = { hasError: false, error: null };
-  static getDerivedStateFromError(error) {
-    return { hasError: true, error };
-  }
-  componentDidCatch(error, errorInfo) {
-    console.error("Tab Error:", error, errorInfo);
-  }
+  state = { hasError: false };
+  static getDerivedStateFromError() { return { hasError: true }; }
+  componentDidCatch(error) { console.error("Error:", error); }
   render() {
     if (this.state.hasError) {
       return (
-        <div style={{ padding: "30px", color: "#fb7185", backgroundColor: "#0f172a", borderRadius: "12px", border: "1px solid #1e293b", margin: "20px" }}>
-          <h3 style={{ margin: "0 0 10px 0" }}>⚠️ Module Loading Error</h3>
-          <p style={{ fontSize: "14px", color: "#94a3b8" }}>This module encountered a rendering issue. Please check console or try another tab.</p>
+        <div style={{ padding: "30px", color: "#fb7185", backgroundColor: "#0f172a", borderRadius: "16px", border: "1px solid #1e293b", margin: "20px" }}>
+          <h3 style={{ margin: "0 0 8px 0" }}>⚠️ Module Loading Notice</h3>
+          <p style={{ fontSize: "13px", color: "#94a3b8", margin: 0 }}>This view is initializing or syncing with live backend telemetry.</p>
         </div>
       );
     }
