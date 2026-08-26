@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 export default function AiAssistant() {
   const [messages, setMessages] = useState([
-    { sender: "ai", text: "Hello Digvijay! Groq Cloud LLM is live via secure environment variables. Type your query below." }
+    { sender: "ai", text: "Hello Digvijay! Debugging Groq Cloud connection..." }
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -18,7 +18,8 @@ export default function AiAssistant() {
 
     try {
       const apiKey = import.meta.env.VITE_GROQ_API_KEY;
-      
+      console.log("Using API Key prefix:", apiKey ? apiKey.substring(0, 8) + "..." : "NOT FOUND");
+
       const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
         headers: {
@@ -26,7 +27,7 @@ export default function AiAssistant() {
           "Authorization": `Bearer ${apiKey}`
         },
         body: JSON.stringify({
-          model: "llama3-70b-8192",
+          model: "llama-3.1-8b-instant",
           messages: [
             { role: "system", content: "You are Apex AI, an advanced assistant built for Digvijay." },
             { role: "user", content: userMessage }
@@ -36,13 +37,18 @@ export default function AiAssistant() {
       });
 
       const data = await res.json();
-      if (data.choices && data.choices[0]) {
+      console.log("Groq API Full Response:", data);
+
+      if (data.choices && data.choices[0] && data.choices[0].message) {
         setMessages(prev => [...prev, { sender: "ai", text: data.choices[0].message.content }]);
+      } else if (data.error) {
+        setMessages(prev => [...prev, { sender: "ai", text: `Groq Error: ${data.error.message}` }]);
       } else {
-        setMessages(prev => [...prev, { sender: "ai", text: "Error: Invalid response from Groq API." }]);
+        setMessages(prev => [...prev, { sender: "ai", text: "Error: Unexpected response format from Groq. Check F12 console." }]);
       }
     } catch (err) {
-      setMessages(prev => [...prev, { sender: "ai", text: "Network error connecting to Groq API." }]);
+      console.error("Fetch Exception:", err);
+      setMessages(prev => [...prev, { sender: "ai", text: `Network Exception: ${err.message}` }]);
     } finally {
       setLoading(false);
     }
@@ -51,8 +57,8 @@ export default function AiAssistant() {
   return (
     <div style={{ padding: "10px", color: "#f8fafc", height: "calc(100vh - 110px)", display: "flex", flexDirection: "column" }}>
       <div style={{ marginBottom: "15px" }}>
-        <h2 style={{ fontSize: "26px", fontWeight: "bold", margin: "0 0 4px 0" }}>Ask AI Assistant (Groq Live)</h2>
-        <p style={{ color: "#94a3b8", margin: 0, fontSize: "14px" }}>Securely connected via environment variables.</p>
+        <h2 style={{ fontSize: "26px", fontWeight: "bold", margin: "0 0 4px 0" }}>Ask AI Assistant (Groq Debug)</h2>
+        <p style={{ color: "#94a3b8", margin: 0, fontSize: "14px" }}>Connected with live console diagnostics.</p>
       </div>
       
       <div style={{ flex: 1, backgroundColor: "#0f172a", borderRadius: "12px", border: "1px solid #1e293b", padding: "20px", display: "flex", flexDirection: "column", justifyContent: "space-between", overflow: "hidden" }}>
@@ -66,7 +72,7 @@ export default function AiAssistant() {
           ))}
           {loading && (
             <div style={{ alignSelf: "flex-start", backgroundColor: "#1e293b", color: "#38bdf8", padding: "12px 18px", borderRadius: "10px", fontSize: "14px", border: "1px solid #334155" }}>
-              <em>Thinking via Groq Cloud...</em>
+              <em>Querying Groq Cloud...</em>
             </div>
           )}
         </div>
