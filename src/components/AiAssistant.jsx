@@ -48,11 +48,44 @@ export default function AiAssistant() {
     }
   };
 
+  const handleExportJSON = () => {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(messages, null, 2));
+    const downloadAnchor = document.createElement("a");
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", `apex_ai_decisions_${Date.now()}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+  };
+
+  const handleExportTXT = () => {
+    const textContent = messages.map(m => `[${m.sender.toUpperCase()}] ${m.text}`).join("\n\n");
+    const blob = new Blob([textContent], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const downloadAnchor = document.createElement("a");
+    downloadAnchor.href = url;
+    downloadAnchor.download = `apex_ai_decisions_${Date.now()}.txt`;
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <div style={{ padding: "10px", color: "#f8fafc", height: "calc(100vh - 110px)", display: "flex", flexDirection: "column" }}>
-      <div style={{ marginBottom: "15px" }}>
-        <h2 style={{ fontSize: "26px", fontWeight: "bold", margin: "0 0 4px 0" }}>Ask AI Assistant</h2>
-        <p style={{ color: "#94a3b8", margin: 0, fontSize: "14px" }}>Enterprise decision intelligence powered by Groq LLM.</p>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "15px" }}>
+        <div>
+          <h2 style={{ fontSize: "26px", fontWeight: "bold", margin: "0 0 4px 0" }}>Ask AI Assistant</h2>
+          <p style={{ color: "#94a3b8", margin: 0, fontSize: "14px" }}>Enterprise decision intelligence powered by Groq LLM.</p>
+        </div>
+        <div style={{ display: "flex", gap: "10px" }}>
+          <button onClick={handleExportJSON} style={{ backgroundColor: "#1e293b", color: "#38bdf8", border: "1px solid #334155", borderRadius: "8px", padding: "8px 14px", fontWeight: "600", cursor: "pointer", fontSize: "13px" }}>
+            Export JSON
+          </button>
+          <button onClick={handleExportTXT} style={{ backgroundColor: "#38bdf8", color: "#0f172a", border: "none", borderRadius: "8px", padding: "8px 14px", fontWeight: "600", cursor: "pointer", fontSize: "13px" }}>
+            Export Report (.txt)
+          </button>
+        </div>
       </div>
       
       <div style={{ flex: 1, backgroundColor: "#0f172a", borderRadius: "12px", border: "1px solid #1e293b", padding: "20px", display: "flex", flexDirection: "column", justifyContent: "space-between", overflow: "hidden" }}>
