@@ -26,7 +26,7 @@ export default function AiAssistant() {
           "Authorization": `Bearer ${apiKey}`
         },
         body: JSON.stringify({
-          model: "llama3-8b-8192",
+          model: "openai/gpt-oss-20b",
           messages: [
             { role: "system", content: "You are Apex AI, an advanced enterprise assistant built for Digvijay." },
             { role: "user", content: userMessage }
