@@ -1,65 +1,60 @@
+import { useState } from "react";
 
 export default function AiAssistant() {
+  const [query, setQuery] = useState("");
   const [messages, setMessages] = useState([
-    { sender: "ai", text: "Apex Neural Core initialized. Ask me regarding resource allocations, risk analysis, or pipeline optimizations." }
+    { sender: "ai", text: "Apex Neural Core online. Enter an enterprise query or request telemetry diagnostics." }
   ]);
-  const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleSend = (e) => {
+  const handleSend = async (e) => {
     e.preventDefault();
-    if (!input.trim()) return;
+    if (!query.trim() || loading) return;
 
-    const userText = input;
-    setMessages(prev => [...prev, { sender: "user", text: userText }]);
-    setInput("");
+    const userMsg = query;
+    setMessages(prev => [...prev, { sender: "user", text: userMsg }]);
+    setQuery("");
     setLoading(true);
 
-    setTimeout(() => {
-      let aiResponse = "";
-      const lower = userText.toLowerCase();
+    try {
+      const res = await fetch("/api/ai-chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: userMsg })
+      });
 
-      if (lower.includes("risk") || lower.includes("threat")) {
-        aiResponse = "Telemetry analysis indicates anomaly mitigation stability at 98.4%. Primary risk vector confined to secondary regional subnetworks.";
-      } else if (lower.includes("cost") || lower.includes("budget") || lower.includes("capital")) {
-        aiResponse = "Fiscal modeling suggests reallocating 6.2% of unallocated reserves toward high-yield pipeline modules to optimize operational margins.";
-      } else if (lower.includes("throughput") || lower.includes("speed") || lower.includes("performance")) {
-        aiResponse = "Node congestion is currently minimal. Latency averages 14.2ms across active ingestion clusters.";
-      } else {
-        aiResponse = `Analyzing query parameters for "${userText}". Apex Neural Core recommends cross-referencing live telemetry metrics with recent data ingestion batches for precise anomaly tracking.`;
-      }
-
-      setMessages(prev => [...prev, { sender: "ai", text: aiResponse }]);
+      const data = await res.json();
+      setMessages(prev => [...prev, { sender: "ai", text: data.reply || "Diagnostic completed." }]);
+    } catch {
+      setMessages(prev => [...prev, { sender: "ai", text: "Connection error: Failed to reach neural cluster backend." }]);
+    } finally {
       setLoading(false);
-    }, 600);
+    }
   };
 
   return (
-    <div style={{ padding: "24px", color: "#fff", background: "#0f172a", minHeight: "100vh", borderRadius: "12px", display: "flex", flexDirection: "column", height: "85vh" }}>
-      <h2 style={{ fontSize: "24px", fontWeight: "bold", marginBottom: "8px" }}>Apex Neural Assistant</h2>
-      <p style={{ color: "#94a3b8", marginBottom: "16px" }}>Context-aware enterprise diagnostic engine.</p>
+    <div style={{ padding: "24px", color: "#fff", background: "#0f172a", minHeight: "100vh", borderRadius: "12px", display: "flex", flexDirection: "column" }}>
+      <h2 style={{ fontSize: "24px", fontWeight: "bold", marginBottom: "8px" }}>Apex Neural Core (Cloud LLM Gateway)</h2>
+      <p style={{ color: "#94a3b8", marginBottom: "24px" }}>Secure serverless enterprise intelligence engine.</p>
 
-      <div style={{ flex: 1, background: "#1e293b", borderRadius: "8px", padding: "16px", overflowY: "auto", border: "1px solid #334155", marginBottom: "16px", display: "flex", flexDirection: "column", gap: "12px" }}>
-        {messages.map((m, idx) => (
-          <div key={idx} style={{ alignSelf: m.sender === "user" ? "flex-end" : "flex-start", background: m.sender === "user" ? "#3b82f6" : "#334155", padding: "10px 14px", borderRadius: "8px", maxWidth: "75%", fontSize: "14px" }}>
-            {m.text}
-          </div>
-        ))}
-        {loading && <div style={{ alignSelf: "flex-start", color: "#facc15", fontSize: "13px" }}>Neural processing query...</div>}
+      <div style={{ flex: 1, background: "#1e293b", padding: "20px", borderRadius: "8px", border: "1px solid #334155", display: "flex", flexDirection: "column", justifyContent: "space-between", minHeight: "400px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px", overflowY: "auto", maxHeight: "350px", marginBottom: "16px" }}>
+          {messages.map((m, idx) => (
+            <div key={idx} style={{ alignSelf: m.sender === "user" ? "flex-end" : "flex-start", background: m.sender === "user" ? "#3b82f6" : "#0f172a", color: "#fff", padding: "12px 16px", borderRadius: "8px", maxWidth: "75%", border: "1px solid #334155", fontSize: "14px" }}>
+              <span style={{ display: "block", fontSize: "11px", color: m.sender === "user" ? "#bfdbfe" : "#94a3b8", marginBottom: "4px" }}>{m.sender === "user" ? "Operator" : "Neural Core"}</span>
+              {m.text}
+            </div>
+          ))}
+          {loading && <div style={{ color: "#facc15", fontSize: "13px" }}>Processing inference stream...</div>}
+        </div>
+
+        <form onSubmit={handleSend} style={{ display: "flex", gap: "12px" }}>
+          <input type="text" value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Ask enterprise query (e.g., analyze system risk, optimize nodes)..." style={{ flex: 1, background: "#0f172a", border: "1px solid #334155", padding: "12px", borderRadius: "6px", color: "#fff", outline: "none" }} />
+          <button type="submit" disabled={loading} style={{ background: "#3b82f6", color: "#fff", border: "none", padding: "0 20px", borderRadius: "6px", fontWeight: "600", cursor: "pointer" }}>
+            {loading ? "Analyzing..." : "Transmit"}
+          </button>
+        </form>
       </div>
-
-      <form onSubmit={handleSend} style={{ display: "flex", gap: "12px" }}>
-        <input 
-          type="text" 
-          value={input} 
-          onChange={(e) => setInput(e.target.value)} 
-          placeholder="Ask enterprise AI regarding risk, costs, or telemetry..."
-          style={{ flex: 1, padding: "12px", borderRadius: "6px", border: "1px solid #334155", background: "#1e293b", color: "#fff", outline: "none" }}
-        />
-        <button type="submit" style={{ background: "#3b82f6", color: "#fff", border: "none", padding: "0 20px", borderRadius: "6px", fontWeight: "500", cursor: "pointer" }}>
-          Transmit
-        </button>
-      </form>
     </div>
   );
 }
